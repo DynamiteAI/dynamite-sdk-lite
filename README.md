@@ -91,7 +91,6 @@ search.execute_query(start, end, search_filter="http", as_dataframe=True)
 - flows - Zeek conn.log (With location information)
 - dhcp  - Zeek dhcp.log
 - dns   - Zeek dns.log
-- dhcp  - Zeek dhcp.log
 - http  - Zeek http.log
 - sip   - Zeek sip.log
 - snmp  - Zeek snmp.log
