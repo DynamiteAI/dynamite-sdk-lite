@@ -237,14 +237,3 @@ class NetworkEventToConnectionEventPivot(Pivot):
     def __init__(self, uid, as_dataframe=False):
         self.uid = uid
         super().__init__(uid, conn_to_network_events=False, as_dataframe=as_dataframe)
-
-
-
-from datetime import timedelta
-
-start = datetime.now() - timedelta(hours=10)
-end = datetime.now()
-
-search = Search('conn', as_dataframe=True)
-search.execute_query(start, end, search_filter="flow.client_addr: 89.248.172.16")
-print(search.events)
