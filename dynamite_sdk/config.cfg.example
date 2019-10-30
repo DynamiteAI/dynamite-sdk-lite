@@ -1,0 +1,8 @@
+[AUTHENTICATION]
+elasticsearch_url = http://localhost:9200
+elasticsearch_user = elastic
+elasticsearch_password = changeme
+
+[SEARCH]
+timeout = 60
+max_results = 20000
