@@ -9,11 +9,24 @@ import elasticsearch
 
 from dynamite_sdk import config
 from dynamite_sdk.objects import events
+from dynamite_sdk.objects import _queries
+
+
+class InvalidZeekEventError(Exception):
+    """
+    Thrown when a Zeek event is expected, but a Flow/Suricata event is given
+    """
+    def __init__(self, message):
+        """
+        :param message: A more specific error message
+        """
+        msg = "Invalid Zeek Event: ".format(message)
+        super(InvalidZeekEventError, self).__init__(msg)
 
 
 index_mappings = {
     'alerts' : ('suricata-1.1.0-*', None),
-    'events': ('-suricata*,*', events.Event),
+    'events': ('*event*', events.Event),
     'conn'   : ('event-flows-*', events.ConnectionEvent),
     'flows'  : ('event-flows-*', events.ConnectionEvent),
     'dhcp'   : ('dhcp-events-*', events.DhcpEvent),
@@ -74,6 +87,7 @@ class Pivot(ABC):
                     self.event_count += 1
                 except events.InvalidEventError:
                     self.invalid_event_count += 1
+
         query = {
             "query": {
                 "bool": {
@@ -120,7 +134,10 @@ class Pivot(ABC):
         else:
             self.events = [event for event in events_list if event.event_type == 'conn']
         if self.as_dataframe:
-            self.events = pd.concat([event.to_dataframe() for event in self.events])
+            try:
+                self.events = pd.concat([event.to_dataframe() for event in self.events], ignore_index=True)
+            except ValueError:
+                self.events = pd.DataFrame()
 
 
 class Search:
@@ -171,25 +188,14 @@ class Search:
                     events_list.append(event_obj)
                 except events.InvalidEventError:
                     self.invalid_event_count += 1
-
-        if search_filter:
-            search_filter = 'AND {}'.format(search_filter)
+        if isinstance(search_filter, str):
+            if ':' in search_filter:
+                field, value = search_filter.split(':')
+                query = _queries.time_bound_field_query(start, end, field.strip(), value.strip())
+            else:
+                query = _queries.time_bound_free_text_query(start, end, search_filter)
         else:
-            search_filter = ''
-        start = start.isoformat(sep='T').split('.')[0]
-        end = end.isoformat(sep='T').split('.')[0]
-
-        query = {
-            "query": {
-                "query_string": {
-                    "default_field": "_all",
-                    "query": '@timestamp:[{} TO {}] {}'.format(start, end, search_filter)
-                }
-            },
-            "sort": {
-                "@timestamp": {"order": "desc"}
-            }
-        }
+            query = _queries.time_bound_free_text_query(start, end, search_filter=None)
         _hits_raw = self.session.search(body=query, index=self.index, size=1000, scroll='5m')
         sid = _hits_raw['_scroll_id']
         matches = _hits_raw['hits']['hits']
@@ -211,9 +217,15 @@ class Search:
             scroll_size = len(matches)
             self.event_count += scroll_size
         if self.as_dataframe:
-            self.events = pd.concat(events_list)
+            try:
+                self.events = pd.concat(events_list, ignore_index=True)
+            except ValueError:
+                self.events = pd.DataFrame()
         else:
             self.events = events_list
+
+        # Clear old scroll contexts
+        self.session.clear_scroll(scroll_id=sid)
 
         if self.invalid_event_count:
             stderr_logger.warning('{} {} failed to parse.'.format(self.invalid_event_count, self.index))
@@ -224,9 +236,17 @@ class ConnectionEventToNetworkEventsPivot(Pivot):
     Provides an interface from a connection event to the corresponding network-event(s) (sub-event)
     """
 
-    def __init__(self, uid, as_dataframe=False):
-        self.uid = uid
-        super().__init__(uid, conn_to_network_events=True, as_dataframe=as_dataframe)
+    def __init__(self, event: events.Event, as_dataframe=False):
+        self.uid = None
+        if not isinstance(event, events.Event):
+            raise events.InvalidEventError('An Zeek Event object was expected, got: {}'.format(type(event)))
+        try:
+            self.uid = event.raw_event_document['zeek']['uid']
+        except KeyError:
+            raise InvalidZeekEventError('A Zeek event is required for pivot operations, given: {}'.format(
+                event.forwarder_type)
+            )
+        super().__init__(self.uid, conn_to_network_events=True, as_dataframe=as_dataframe)
 
 
 class NetworkEventToConnectionEventPivot(Pivot):
@@ -234,6 +254,14 @@ class NetworkEventToConnectionEventPivot(Pivot):
     Provides an interface from pivoting from some network-event (sub-event) to the corresponding connection event
     """
 
-    def __init__(self, uid, as_dataframe=False):
-        self.uid = uid
-        super().__init__(uid, conn_to_network_events=False, as_dataframe=as_dataframe)
+    def __init__(self, event: events.Event, as_dataframe=False):
+        self.uid = None
+        if not isinstance(event, events.Event):
+            raise events.InvalidEventError('An Zeek Event object was expected, got: {}'.format(type(event)))
+        try:
+            self.uid = event.raw_event_document['zeek']['uid']
+        except KeyError:
+            raise InvalidZeekEventError('A Zeek event is required for pivot operations, given: {}'.format(
+                event.forwarder_type)
+            )
+        super().__init__(self.uid, conn_to_network_events=False, as_dataframe=as_dataframe)

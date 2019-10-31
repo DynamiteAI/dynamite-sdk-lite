@@ -147,7 +147,7 @@ class Event:
         except KeyError:
             self.forwarder_type = 'netflow'
         try:
-            self.node_ip_address = _source['node']['hostname']
+            self.node_hostname = _source['node']['hostname']
         except KeyError:
             raise InvalidEventError('Missing node_hostname field')
         try:
@@ -272,6 +272,8 @@ class ConnectionEvent(Event):
         self.server_geo_location = None            #: The geographical coordinates for the server in the conversation
 
         # Zeek Only
+        self.service = None                        #: An identification of an application protocol being sent
+        self.connection_state = None               #: The state of the connection
         self.duration = None                       #: The number of seconds for a given connection
         self.originated_locally = None             #: True, if the connection originated from inside the network
         self.source_bytes = None                   #: The number of bytes sent
@@ -334,6 +336,8 @@ class ConnectionEvent(Event):
 
         # Get Zeek specific conn.log fields
         try:
+            self.service = _source['zeek'].get('service')
+            self.connection_state = _source['zeek'].get('conn_state')
             self.duration = _source['zeek'].get('duration')
             self.originated_locally = _source['zeek'].get('local_orig')
             self.history = _source['zeek'].get('history')
