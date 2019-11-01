@@ -87,6 +87,7 @@ search.execute_query(start, end, search_filter="http", as_dataframe=True)
 - [Working with Events](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_events.ipynb)
 - [Working with Flows/conn.log](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_flows_conn_log.ipynb)
 - [Working with Network Protocol Events](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_network_protocol_events.ipynb)
+- [Pivoting between Events](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/pivoting_between_events.ipynb)
 
 ### Supported Search Indices
 

@@ -240,9 +240,8 @@ class ConnectionEventToNetworkEventsPivot(Pivot):
         self.uid = None
         if not isinstance(event, events.Event):
             raise events.InvalidEventError('An Zeek Event object was expected, got: {}'.format(type(event)))
-        try:
-            self.uid = event.raw_event_document['zeek']['uid']
-        except KeyError:
+        self.uid = event.uid
+        if not self.uid:
             raise InvalidZeekEventError('A Zeek event is required for pivot operations, given: {}'.format(
                 event.forwarder_type)
             )
@@ -255,12 +254,11 @@ class NetworkEventToConnectionEventPivot(Pivot):
     """
 
     def __init__(self, event: events.Event, as_dataframe=False):
-        self.uid = None
+        self.uid = event.uid
         if not isinstance(event, events.Event):
             raise events.InvalidEventError('An Zeek Event object was expected, got: {}'.format(type(event)))
-        try:
-            self.uid = event.raw_event_document['zeek']['uid']
-        except KeyError:
+        self.uid = event.uid
+        if not self.uid:
             raise InvalidZeekEventError('A Zeek event is required for pivot operations, given: {}'.format(
                 event.forwarder_type)
             )

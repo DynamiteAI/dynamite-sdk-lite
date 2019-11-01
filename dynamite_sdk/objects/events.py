@@ -118,6 +118,7 @@ class Event:
         self.forwarder_type = None            #: Either "zeek" or "netflow"
         self.node_ip_address = None           #: The ip_address of the originating host (collector/agent IP)
         self.node_hostname = None             #: The hostname of the originating host (collector/agent hostname)
+        self.uid = None                       #: The unique id for the Zeek connection
 
         self._parse_raw_event()
 
@@ -208,6 +209,13 @@ class Event:
                     self.destination_port = _source['zeek']['server_port']
                 except KeyError:
                     pass
+        try:
+            self.uid = _source['zeek']['uid']
+        except KeyError:
+            try:
+                self.uid = _source['zeek']['uids'][0]
+            except (KeyError, IndexError):
+                pass
 
     def __str__(self):
         """
