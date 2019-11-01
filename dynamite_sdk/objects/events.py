@@ -697,7 +697,7 @@ class SshEvent(Event):
         self.direction = None                #: Direction of the connection (Outbound/Inbound)
         self.client_version_string = None    #: The client's version string
         self.server_version_string = None    #: The server's version string
-        self.cypher_algorithm = None         #: The encryption algorithm in use
+        self.cipher_algorithm = None         #: The encryption algorithm in use
         self.mac_algorithm = None            #: The signing (MAC) algorithm in use
         self.compression_algorithm = None    #: The compression algorithm in use
         self.key_algorithm = None            #: The key exchange algorithm in use
@@ -717,7 +717,7 @@ class SshEvent(Event):
             self.direction = _source['zeek'].get('direction')
             self.client_version_string = _source['zeek'].get('client')
             self.server_version_string = _source['zeek'].get('server')
-            self.cypher_algorithm = _source['zeek'].get('cypher_alg')
+            self.cipher_algorithm = _source['zeek'].get('cipher_alg')
             self.mac_algorithm = _source['zeek'].get('mac_alg')
             self.compression_algorithm = _source['zeek'].get('compression_alg')
             self.key_algorithm = _source['zeek'].get('key_alg')
