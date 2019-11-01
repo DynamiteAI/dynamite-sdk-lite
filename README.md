@@ -83,6 +83,10 @@ search.execute_query(start, end, search_filter="http", as_dataframe=True)
 0       conn 2019-10-30 09:05:50.235000+00:00  ...      Sr  Ci2dHF1KTpWT94hhdl
 ```
 
+#### Checkout Example Notebooks
+- [Working with Events](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_events.ipynb)
+- [Working with Flows/conn.log](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_flows_conn_log.ipynb)
+- [Working with Network Protocol Events](https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_network_protocol_events.ipynb)
 
 ### Supported Search Indices
 
