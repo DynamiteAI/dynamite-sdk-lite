@@ -19,7 +19,7 @@ python setup.py install
 ### Installation
 
 1. Install with `python setup.py install`
-2. Copy `config.cfg.example` to `/etc/dynamite/dynamite_sdk/config.cfg`
+2. Copy `dynamite_sdk/config.cfg.example` to `/etc/dynamite/dynamite_sdk/config.cfg`
 3. Edit `/etc/dynamite/dynamite_sdk/config.cfg` to point to your DynamiteNSM monitor.
 4. **Test with:**
     ```
