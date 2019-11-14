@@ -27,17 +27,17 @@ class InvalidZeekEventError(Exception):
 
 
 index_mappings = {
-    'alerts' :   ('suricata-1.1.0-*', None),
-    'baselines': ('zeek-baselines-*', baselines.Interval),
-    'events':    ('*event*', events.Event),
-    'conn'   :   ('event-flows-*', events.ConnectionEvent),
-    'flows'  :   ('event-flows-*', events.ConnectionEvent),
-    'dhcp'   :   ('dhcp-events-*', events.DhcpEvent),
-    'dns'    :   ('dns-events**', events.DnsEvent),
-    'http'   :   ('http-events-*', events.HttpEvent),
-    'sip'    :   ('sip-events-*', events.SipEvent),
-    'snmp'   :   ('snmp-events-*', events.SnmpEvent),
-    'ssh'    :   ('ssh-events-*', events.SshEvent),
+    'alerts'   :   ('suricata-1.1.0-*', None),
+    'baselines':   ('zeek-baselines-*', baselines.Interval),
+    'events'   :   ('*event*', events.Event),
+    'conn'     :   ('event-flows-*', events.ConnectionEvent),
+    'flows'    :   ('event-flows-*', events.ConnectionEvent),
+    'dhcp'     :   ('dhcp-events-*', events.DhcpEvent),
+    'dns'      :   ('dns-events**', events.DnsEvent),
+    'http'     :   ('http-events-*', events.HttpEvent),
+    'sip'      :   ('sip-events-*', events.SipEvent),
+    'snmp'     :   ('snmp-events-*', events.SnmpEvent),
+    'ssh'      :   ('ssh-events-*', events.SshEvent),
 }
 
 stderr_logger = logging.getLogger('STDERR')
