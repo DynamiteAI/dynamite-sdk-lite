@@ -7,9 +7,11 @@ from datetime import datetime
 import pandas as pd
 import elasticsearch
 
+from dynamite_sdk.objects import _queries
+
 from dynamite_sdk import config
 from dynamite_sdk.objects import events
-from dynamite_sdk.objects import _queries
+from dynamite_sdk.objects import baselines
 
 
 class InvalidZeekEventError(Exception):
@@ -25,16 +27,17 @@ class InvalidZeekEventError(Exception):
 
 
 index_mappings = {
-    'alerts' : ('suricata-1.1.0-*', None),
-    'events': ('*event*', events.Event),
-    'conn'   : ('event-flows-*', events.ConnectionEvent),
-    'flows'  : ('event-flows-*', events.ConnectionEvent),
-    'dhcp'   : ('dhcp-events-*', events.DhcpEvent),
-    'dns'    : ('dns-events**', events.DnsEvent),
-    'http'   : ('http-events-*', events.HttpEvent),
-    'sip'    : ('sip-events-*', events.SipEvent),
-    'snmp'   : ('snmp-events-*', events.SnmpEvent),
-    'ssh'    : ('ssh-events-*', events.SshEvent),
+    'alerts' :   ('suricata-1.1.0-*', None),
+    'baselines': ('zeek-baselines-*', baselines.Interval),
+    'events':    ('*event*', events.Event),
+    'conn'   :   ('event-flows-*', events.ConnectionEvent),
+    'flows'  :   ('event-flows-*', events.ConnectionEvent),
+    'dhcp'   :   ('dhcp-events-*', events.DhcpEvent),
+    'dns'    :   ('dns-events**', events.DnsEvent),
+    'http'   :   ('http-events-*', events.HttpEvent),
+    'sip'    :   ('sip-events-*', events.SipEvent),
+    'snmp'   :   ('snmp-events-*', events.SnmpEvent),
+    'ssh'    :   ('ssh-events-*', events.SshEvent),
 }
 
 stderr_logger = logging.getLogger('STDERR')
@@ -43,7 +46,7 @@ stderr_logger = logging.getLogger('STDERR')
 class Pivot(ABC):
 
     """
-    An abstract interface for pivoting between Zeek logs
+    An abstract interface for pivoting between Zeek events
     """
 
     def __init__(self, uid, conn_to_network_events=True, as_dataframe=False):
@@ -155,9 +158,9 @@ class Search:
             self.transformation_cls = events.Event
         auth_config = config['AUTHENTICATION']
         self.as_dataframe = as_dataframe
-        self.events = []
-        self.event_count = 0
-        self.invalid_event_count = 0
+        self.results = []
+        self.result_count = 0
+        self.invalid_result_count = 0
         self.search_timeout = int(config['SEARCH']['timeout'])
         self.max_search_results = int(config['SEARCH']['max_results'])
         self.session = elasticsearch.Elasticsearch(
@@ -176,8 +179,8 @@ class Search:
         """
         events_list = []
         start_time = time.time()
-        self.event_count = 0
-        self.invalid_event_count = 0
+        self.result_count = 0
+        self.invalid_result_count = 0
 
         def add_event(raw_events):
             for r_event in raw_events:
@@ -186,8 +189,8 @@ class Search:
                     if self.as_dataframe:
                         event_obj = event_obj.to_dataframe()
                     events_list.append(event_obj)
-                except events.InvalidEventError:
-                    self.invalid_event_count += 1
+                except (events.InvalidEventError, baselines.InvalidIntervalError):
+                    self.invalid_result_count += 1
         if isinstance(search_filter, str):
             if ':' in search_filter:
                 field, value = search_filter.split(':')
@@ -200,7 +203,7 @@ class Search:
         sid = _hits_raw['_scroll_id']
         matches = _hits_raw['hits']['hits']
         scroll_size = len(matches)
-        self.event_count += scroll_size
+        self.result_count += scroll_size
         add_event(matches)
         while scroll_size > 0:
             _next_hits_raw = self.session.scroll(scroll_id=sid, scroll='5m', request_timeout=60)
@@ -210,25 +213,25 @@ class Search:
                 stderr_logger.warning('Exceeded max query time {}s, a smaller search window is suggested'
                                       '...exiting early.'.format(self.search_timeout))
                 break
-            elif self.event_count >= self.max_search_results:
+            elif self.result_count >= self.max_search_results:
                 stderr_logger.warning('Exceeded max query results {}, a smaller search window is suggested'
                                       '...exiting early'.format(self.max_search_results))
                 break
             scroll_size = len(matches)
-            self.event_count += scroll_size
+            self.result_count += scroll_size
         if self.as_dataframe:
             try:
-                self.events = pd.concat(events_list, ignore_index=True)
+                self.results = pd.concat(events_list, ignore_index=True)
             except ValueError:
-                self.events = pd.DataFrame()
+                self.results = pd.DataFrame()
         else:
-            self.events = events_list
+            self.results = events_list
 
         # Clear old scroll contexts
         self.session.clear_scroll(scroll_id=sid)
 
-        if self.invalid_event_count:
-            stderr_logger.warning('{} {} failed to parse.'.format(self.invalid_event_count, self.index))
+        if self.invalid_result_count:
+            stderr_logger.warning('{} {} failed to parse.'.format(self.invalid_result_count, self.index))
 
 
 class ConnectionEventToNetworkEventsPivot(Pivot):
