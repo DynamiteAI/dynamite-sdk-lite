@@ -91,43 +91,7 @@ class Pivot(ABC):
                 except events.InvalidEventError:
                     self.invalid_event_count += 1
 
-        query = {
-            "query": {
-                "bool": {
-                    "filter": [
-                        {
-                          "bool": {
-                            "should": [
-                              {
-                                "bool": {
-                                  "should": [
-                                    {
-                                      "match": {
-                                        "zeek.uid": "{}".format(self.uid)
-                                      }
-                                    }
-                                  ],
-                                  "minimum_should_match": 1
-                                }
-                              },
-                              {
-                                "multi_match": {
-                                  "type": "best_fields",
-                                  "query": "{}".format(self.uid),
-                                  "lenient": True
-                                }
-                              }
-                            ],
-                            "minimum_should_match": 1
-                          }
-                        }
-                      ]
-                }
-            },
-            "sort": {
-                "@timestamp": {"order": "desc"}
-            }
-        }
+        query = _queries.uid_query(self.uid)
         _hits_raw = self.session.search(body=query, index='*', size=1000)
 
         matches = _hits_raw['hits']['hits']
