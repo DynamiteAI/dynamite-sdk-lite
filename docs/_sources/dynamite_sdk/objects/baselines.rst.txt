@@ -1,0 +1,13 @@
+Intervals
+---------
+
+Intervals represent an aggregation of events between a given **start** and **end** period.
+
+DynamiteNSM makes direct use of https://github.com/pmphry/netbase Zeek scripts to perform these aggregations on the fly.
+
+------------
+The Interval
+------------
+
+.. autoclass:: dynamite_sdk.objects.baselines.Interval
+   :members:

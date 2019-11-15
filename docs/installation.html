@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Installation &#8212; dynamite_sdk 11/15/2019 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Installing DynamiteSDK is easy, but requires that you have a running version of <a class="reference external" href="https://github.com/DynamiteAI/dynamite-nsm">DynamiteNSM</a> in your environment.</p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Python3.5 or higher.</p></li>
+<li><p>Access to DynamiteNSM monitor instance.</p></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Install from pip:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">dynamite</span><span class="o">-</span><span class="n">sdk</span>
+</pre></div>
+</div>
+<p>Or install via setup.py:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>Once installed create a config.cfg in <strong>/etc/dynamite/dynamite_sdk/config.cfg</strong> or in the runtime directory.
+The config file will look something like this, but you’ll need to change the <strong>elasticsearch_url</strong> and <strong>elasticsearch_password</strong>.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">AUTHENTICATION</span><span class="p">]</span>
+<span class="n">elasticsearch_url</span> <span class="o">=</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">9200</span>
+<span class="n">elasticsearch_user</span> <span class="o">=</span> <span class="n">elastic</span>
+<span class="n">elasticsearch_password</span> <span class="o">=</span> <span class="n">changeme</span>
+
+<span class="p">[</span><span class="n">SEARCH</span><span class="p">]</span>
+<span class="n">timeout</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">max_results</span> <span class="o">=</span> <span class="mi">20000</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>Once everything is pointed to your host you can test the connection with the snipit below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">dynamite_sdk.search</span> <span class="k">import</span> <span class="n">Search</span>
+
+<span class="c1"># Set our search time period</span>
+<span class="n">start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="c1"># Instantiate our Search object</span>
+<span class="n">search</span> <span class="o">=</span> <span class="n">Search</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">as_dataframe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Execute our search</span>
+<span class="n">search</span><span class="o">.</span><span class="n">execute_query</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+<span class="c1"># Get our results as a dataframe</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">search</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="extra-examples">
+<h3>Extra Examples<a class="headerlink" href="#extra-examples" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Working with Netflow and Zeek (conn.log) events [<a class="reference external" href="https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_flows_conn_log.ipynb">notebook_1</a>]</p></li>
+<li><p>Working with Zeek network protocol events [<a class="reference external" href="https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_network_protocol_events.ipynb">notebook_2</a>]</p></li>
+<li><p>Pivoting between Zeek events [<a class="reference external" href="https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/pivoting_between_events.ipynb">notebook_3</a>]</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">dynamite_sdk</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Libraries</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dynamite_sdk/search.html">Search</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dynamite_sdk/objects/baselines.html">Intervals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dynamite_sdk/objects/events.html">Events</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jamin Becker.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

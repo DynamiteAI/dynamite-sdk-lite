@@ -1,0 +1,79 @@
+Installation
+-------------
+
+Installing DynamiteSDK is easy, but requires that you have a running version of DynamiteNSM_ in your environment.
+
+.. _DynamiteNSM: https://github.com/DynamiteAI/dynamite-nsm
+
+-------------
+Prerequisites
+-------------
+- Python3.5 or higher.
+- Access to DynamiteNSM monitor instance.
+
+------------
+Installation
+------------
+
+Install from pip::
+
+    pip install dynamite-sdk
+
+Or install via setup.py::
+
+    python setup.py install
+
+
+
+
+-------------
+Configuration
+-------------
+
+Once installed create a config.cfg in **/etc/dynamite/dynamite_sdk/config.cfg** or in the runtime directory.
+The config file will look something like this, but you'll need to change the **elasticsearch_url** and **elasticsearch_password**.::
+
+    [AUTHENTICATION]
+    elasticsearch_url = http://localhost:9200
+    elasticsearch_user = elastic
+    elasticsearch_password = changeme
+
+    [SEARCH]
+    timeout = 60
+    max_results = 20000
+
+
+
+---------------
+Getting Started
+---------------
+Once everything is pointed to your host you can test the connection with the snipit below::
+
+    from datetime import datetime, timedelta
+    from dynamite_sdk.search import Search
+
+    # Set our search time period
+    start = datetime.now() - timedelta(minutes=5)
+    end = datetime.now()
+
+    # Instantiate our Search object
+    search = Search('events', as_dataframe=True)
+
+    # Execute our search
+    search.execute_query(start, end)
+
+    # Get our results as a dataframe
+    print(search.results)
+
+
+
+==============
+Extra Examples
+==============
+
+- Working with Netflow and Zeek (conn.log) events [notebook_1_]
+- Working with Zeek network protocol events [notebook_2_]
+- Pivoting between Zeek events [notebook_3_]
+.. _notebook_1: https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_flows_conn_log.ipynb
+.. _notebook_2: https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/working_with_network_protocol_events.ipynb
+.. _notebook_3: https://github.com/DynamiteAI/dynamite-sdk-lite/blob/master/notebooks/getting_started/pivoting_between_events.ipynb
