@@ -1,5 +1,0 @@
-.. toctree::
-   :maxdepth: 5
-dynamite_sdk/search
-dynamite_sdk/objects/baselines
-dynamite_sdk/objects/events
