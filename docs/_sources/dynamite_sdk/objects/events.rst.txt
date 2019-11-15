@@ -8,5 +8,68 @@ Events must have the following attributes to be considered an event
 - Source/Destination IP
 - Source/Destination Port
 
-.. automodule:: dynamite_sdk.objects.events
+----------
+The Event
+----------
+The Event class can represent almost any kind of transaction stored within DynamiteNSM.
+
+As a matter of fact all network based events can be derived from this class.
+
+.. autoclass:: dynamite_sdk.objects.events.Event
+   :members:
+
+-----------------
+Connection Event
+-----------------
+
+The Connection Event class is used to normalize two kinds of event sources.
+
+- The first are events derived from the Zeek **conn.log**.
+- The second are events derived from NetFlow devices.
+
+.. autoclass:: dynamite_sdk.objects.events.ConnectionEvent
+   :members:
+
+-----------------
+Protocol Events
+-----------------
+
+The Dynamite SDK also supports a handful of protocol based events. These are derived from Zeek protocol logs.
+
+Additional log support is being added everyday!
+
+===========
+DHCP Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.DhcpEvent
+   :members:
+
+===========
+DNS Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.DnsEvent
+   :members:
+
+===========
+HTTP Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.HttpEvent
+   :members:
+
+===========
+SIP Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.SipEvent
+   :members:
+
+===========
+SNMP Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.SnmpEvent
+   :members:
+
+===========
+SSH Event
+===========
+.. autoclass:: dynamite_sdk.objects.events.SshEvent
    :members:
