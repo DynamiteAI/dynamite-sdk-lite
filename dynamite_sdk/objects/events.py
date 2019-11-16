@@ -229,7 +229,7 @@ class Event:
 
     def to_dataframe(self) -> pd.DataFrame:
         """
-        :return: DataFrame containng the field headings and single of of values
+        :return: DataFrame containng the field headings and single of values
         """
         ignore_vars = ['raw_event_document', 'attributes']
         headers = [var for var in vars(self) if var not in ignore_vars]

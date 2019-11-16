@@ -37,7 +37,7 @@ class Interval:
         self.external_host_count = None                          #: Count of unique hosts communicated with externally
         self.internal_client_count = None                        #: Count of unique internal clients communicating with this IP
         self.external_client_count = None                        #: Count fo unique external clients communicating with this IP
-        self.connections_count = None                            #: Total count of connections this IP was involved in
+        self.connection_count = None                            #: Total count of connections this IP was involved in
         self.originating_connection_count = None                 #: Total count of external conns originated by this IP
         self.successful_originating_connection_count = None      #: Count of outbound conns originated by this IP that were successful
         self.rejected_originating_connection_count = None        #: Count of outbound conns originated by this IP that were rejected
@@ -50,7 +50,7 @@ class Interval:
         self.internal_to_highport_count = None                   #: Count of internal conns to ports >= 1024
         self.internal_to_lowport_count = None                    #: Count of internal conns to ports < 1024
         self.internal_to_service_count = None                    #: Count of internal conns to recognized server
-        self.internal_received_connections_count = None          #: Count of internal conns this IP responded to
+        self.internal_received_connection_count = None          #: Count of internal conns this IP responded to
         self.internal_originating_bytes_sent_sum = None          #: Sum of bytes sent as originator in internal conns
         self.internal_originating_bytes_received_sum = None      #: Sum of bytes received as originator in internal conns
         self.external_originating_bytes_sent_sum = None          #: Sum of bytes sent as originator in external conns
@@ -142,7 +142,7 @@ class Interval:
             self.external_host_count = _source['zeek'].get('ext_host_cnt', 0)
             self.internal_client_count = _source['zeek'].get('int_client_cnt', 0)
             self.external_client_count = _source['zeek'].get('ext_client_cnt', 0)
-            self.connections_count = _source['zeek'].get('total_conns', 0)
+            self.connection_count = _source['zeek'].get('total_conns', 0)
             self.originating_connection_count = _source['zeek'].get('out_orig_conns', 0)
             self.successful_originating_connection_count = _source['zeek'].get('out_succ_conns', 0)
             self.rejected_originating_connection_count = _source['zeek'].get('out_rej_conns', 0)
@@ -154,7 +154,7 @@ class Interval:
             self.internal_to_highport_count = _source['zeek'].get('int_to_highports', 0)
             self.internal_to_lowport_count = _source['zeek'].get('int_to_lowports', 0)
             self.internal_to_service_count = _source['zeek'].get('int_to_service', 0)
-            self.internal_received_connections_count = _source['zeek'].get('int_resp_conns', 0)
+            self.internal_received_connection_count = _source['zeek'].get('int_resp_conns', 0)
             self.internal_originating_bytes_sent_sum = _source['zeek'].get('int_orig_bytes_sent', 0)
             self.internal_originating_bytes_received_sum = _source['zeek'].get('int_orig_bytes_rcvd', 0)
             self.external_originating_bytes_sent_sum = _source['zeek'].get('out_orig_bytes_sent', 0)
@@ -189,7 +189,7 @@ class Interval:
             self.rdp_producer_consumer_ratio_max = _source['zeek'].get('pcr_rdp_max', 0)
             self.rdp_producer_consumer_ratio_min = _source['zeek'].get('pcr_rdp_min', 0)
         except KeyError:
-            raise InvalidIntervalError('Invalid dns record, missing "zeek" section')
+            raise InvalidIntervalError('Invalid interval record, missing "zeek" section')
 
     def __str__(self) -> str:
         """
@@ -200,9 +200,9 @@ class Interval:
     def to_dataframe(self) -> pd.DataFrame:
         """
 
-        :return: DataFrame containng the field headings and single of of values
+        :return: DataFrame containng the field headings and single of values
         """
-        ignore_vars = ['raw_interval_documen']
+        ignore_vars = ['raw_interval_document']
         headers = [var for var in vars(self) if var not in ignore_vars]
         data = [[getattr(self, header) for header in headers]]
         return pd.DataFrame(data, columns=headers)
