@@ -15,7 +15,7 @@ The main purpose of this SDK is provide a set of wrappers for working with the e
 python setup.py install
 ```
 
-### In Depth Documentation
+### Documentation
 https://dynamite-sdk-lite.s3-us-west-2.amazonaws.com/index.html
 
 ### Installation
