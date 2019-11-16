@@ -16,7 +16,7 @@ python setup.py install
 ```
 
 ### In Depth Documentation
-https://dynamite-sdk-lite.s3-us-west-2.amazonaws.com/
+https://dynamite-sdk-lite.s3-us-west-2.amazonaws.com/index.html
 
 ### Installation
 
