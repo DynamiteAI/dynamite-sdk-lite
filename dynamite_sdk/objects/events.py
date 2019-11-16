@@ -107,7 +107,7 @@ class Event:
     def __init__(self, raw_event_document: dict):
         self.raw_event_document = raw_event_document
 
-        self.event_type = None                #: The type of event (Either "flow" or a Zeek log prefix
+        self.event_type = None                #: The type of event (Either "flow" or a Zeek log prefix)
         self.event_time = None                #: The UTC-0 time at which the event occurred
         self.source_ip_address = None         #: The sender IP in the event
         self.destination_ip_address = None    #: The recipient IP in the event
@@ -229,8 +229,7 @@ class Event:
 
     def to_dataframe(self) -> pd.DataFrame:
         """
-
-        :return: 1x1 DataFrame of heading and event fields
+        :return: DataFrame containng the field headings and single of values
         """
         ignore_vars = ['raw_event_document', 'attributes']
         headers = [var for var in vars(self) if var not in ignore_vars]
