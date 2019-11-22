@@ -1,0 +1,21 @@
+# Ignore .idea dir
+.idea/
+
+# Ignore local build files
+*.egg-info
+build/
+dist/
+**/__pycache__/
+env/
+
+# Ignore notebook checkpoints
+**/.ipynb_checkpoints/
+
+# Ignore local notebooks
+notebooks/local_files/
+
+# Ignore local MLrun
+notebooks/examples/mlruns/
+
+# Ignore local config file
+**/*.cfg

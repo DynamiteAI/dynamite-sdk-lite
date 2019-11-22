@@ -11,6 +11,9 @@ setup(
     install_requires=[
         'elasticsearch>=6.0.0,<7.0.5',
         'pandas==0.25.2',
-        'python-dateutil==2.8.0'
+        'python-dateutil==2.8.0',
+        'scipy==0.19.1',
+        'scikit_learn==0.19.1',
+        'numpy==1.17.2'
     ]
 )
