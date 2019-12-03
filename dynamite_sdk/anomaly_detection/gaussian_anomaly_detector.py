@@ -1,5 +1,6 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
+from numpy import inf
 import math
 import scipy.stats as stats
 from typing import TypeVar
@@ -103,7 +104,9 @@ class GaussianAnomalyDetector(BaseEstimator, TransformerMixin):
         :param data: pandas dataframe
         :return: pandas dataframe
         """
-        return np.log(data + 1)
+        transformed = np.log(data + 1)
+        transformed[transformed == -inf] = 0
+        return transformed
 
     def _compute_score(self, X) -> np.array:
         """
