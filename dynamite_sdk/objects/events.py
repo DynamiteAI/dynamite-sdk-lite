@@ -116,7 +116,6 @@ class Event:
         self.elasticsearch_index = None       #: The ElasticSearch index where the event was found
         self.originating_agent_tag = None     #: The friendly name of the agent (Zeek events only)
         self.forwarder_type = None            #: Either "zeek" or "netflow"
-        self.node_ip_address = None           #: The ip_address of the originating host (collector/agent IP)
         self.node_hostname = None             #: The hostname of the originating host (collector/agent hostname)
         self.uid = None                       #: The unique id for the Zeek connection
 
@@ -136,12 +135,6 @@ class Event:
             _source = self.raw_event_document['_source']
         except KeyError:
             raise InvalidEventError('Missing _source section')
-        try:
-            self.node_ip_address = ip_address(_source['node']['ipaddr'])
-        except KeyError:
-            raise InvalidEventError('Missing node_ip_address field')
-        except ValueError:
-            raise InvalidEventError('Invalid node_ip_address field [{}]'.format(_source['node']['ipaddr']))
         try:
             self.originating_agent_tag = _source['fields']['originating_agent_tag']
             self.forwarder_type = 'zeek'
