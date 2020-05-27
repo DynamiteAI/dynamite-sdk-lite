@@ -177,11 +177,11 @@ class Event:
                 try:
                     self.destination_ip_address = _source['zeek']['server_addr']
                 except KeyError:
-                    InvalidEventError('Missing destination_ip_address field')
+                    raise InvalidEventError('Missing destination_ip_address field')
         try:
             self.destination_ip_address = ip_address(self.destination_ip_address)
         except ValueError:
-            raise ('Invalid destination_ip_addr field [{}]'.format(self.destination_ip_address))
+            raise InvalidEventError('Invalid destination_ip_addr field [{}]'.format(self.destination_ip_address))
         try:
             self.source_port = _source['flow']['src_port']
         except KeyError:
