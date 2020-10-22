@@ -16,14 +16,6 @@ class ConfigNotFound(Exception):
 
 paths = ['config.cfg', '/etc/dynamite/dynamite_sdk/config.cfg']
 
-found = False
-for path in paths:
-    try:
-        config.read(path)
-        found = True
-        break
-    except FileNotFoundError:
-        pass
-if not found:
+config.read(paths)
+if 'AUTHENTICATION' not in config:
     raise ConfigNotFound(paths)
-
